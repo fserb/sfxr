@@ -9,6 +9,7 @@ import flash.utils.ByteArray;
 
 class Sfxr {
   var _params: SfxrParams;
+  var buffer: ByteArray;
 
   public function new(?params: SfxrParams = null) {
     if (params != null) {
@@ -16,17 +17,13 @@ class Sfxr {
     } else {
       _params = new SfxrParams();
     }
+    buffer = new ByteArray();
+    reset(true);
+    synthWave(buffer);
   }
 
   public function play() {
-    var buffer = new ByteArray();
-    reset(true);
-    synthWave(buffer);
-    #if flash
-      playSWF(buffer);
-    #else
-      playWave(buffer);
-    #end
+    playBuffer(buffer);
   }
 
   var _masterVolume:Float;           // masterVolume * masterVolume (for quick calculations)
@@ -361,8 +358,6 @@ class Sfxr {
       // and I can't find the problem. :(
       _superSample /= 256.0;
 
-      if (buffer.length % 1000 == 0) trace(_superSample);
-
       // Clipping if too loud
       if(_superSample > 1.0) _superSample = 1.0;
       else if(_superSample < -1.0)  _superSample = -1.0;
@@ -371,7 +366,8 @@ class Sfxr {
   }
 
   // tested with native Mac
-  function playWave(wave: ByteArray) {
+#if !flash
+  function playerBuffer(wave: ByteArray) {
     var wav_freq = 44100;
     var wav_bits = 16;
     var stereo = false;
@@ -405,16 +401,14 @@ class Sfxr {
     s.play();
 
     // write data
-    #if !flash
-    var f = sys.io.File.write("test.wav", true);
-    f.writeBytes(file, 0, file.length);
-    f.close();
-    trace("saved... " + file.length);
-    #end
+    // var f = sys.io.File.write("test.wav", true);
+    // f.writeBytes(file, 0, file.length);
+    // f.close();
   }
 
+#else
   // based on BadSector's DynSound.hx
-  function playSWF(wave: ByteArray) {
+  function playBuffer(wave: ByteArray) {
     var rate = 3;
     var is16bits = 1;
     var stereo = 0;
@@ -477,4 +471,5 @@ class Sfxr {
     var ldr = new flash.display.Loader();
     ldr.loadBytes (swf);
   }
+#end
 }
