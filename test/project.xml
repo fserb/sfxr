@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<project>
+
+	<meta title="SfxrTest" package="com.fserb.SfxrTest" version="1.0.0" company="fserb" />
+	<app main="SfxrTest" path="bin" file="SfxrTest" swf-version="11" />
+
+	<window fps="30" background="0xFAFAFA" />
+	<window width="1024" height="768" resizable="false" unless="ios" />
+	<window fullscreen="true" if="mobile" />
+	<window orientation="landscape" vsync="true" antialiasing="0" if="ios" />
+	<window require-shaders="true" />
+
+	<source path="src" />
+
+	<haxelib name="openfl" />
+	<haxelib name="sfxr" />
+</project>
