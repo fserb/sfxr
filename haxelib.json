@@ -1,0 +1,14 @@
+{
+  "name": "sfxr",
+  "license": "MIT",
+  "tags": ["games","sound","cross"],
+  "description": "Haxe port of sfxr",
+  "contributors": ["fserb"],
+  "releasenote": "Initial release, support for flash and native targets",
+  "version": "1.0",
+  "url": "https://github.com/fserb/sfxr",
+  "dependencies": {
+    "openfl-native": "",
+    "openfl": ""
+  }
+}
