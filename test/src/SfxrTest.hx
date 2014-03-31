@@ -1,10 +1,3 @@
-import flash.display.Bitmap;
-import flash.display.BitmapData;
-import flash.display.Sprite;
-import flash.events.Event;
-import flash.events.MouseEvent;
-import flash.Lib;
-import flash.text.TextField;
 import vault.Sfxr;
 import vault.SfxrParams;
 
@@ -26,10 +19,6 @@ class SfxrTest {
     params = SfxrParams.fromString("0,,0.2193,,0.4748,0.3482,,0.0691,,,,,,0.3482,,,,,1,,,,,0.5");
     var sfxr = new Sfxr(params);
     sfxr.play();
-
-    #if !flash
-    Sys.exit(0);
-    #end
   }
 }
 

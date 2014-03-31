@@ -367,7 +367,7 @@ class Sfxr {
 
   // tested with native Mac
 #if !flash
-  function playerBuffer(wave: ByteArray) {
+  function playBuffer(wave: ByteArray) {
     var wav_freq = 44100;
     var wav_bits = 16;
     var stereo = false;

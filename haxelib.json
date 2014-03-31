@@ -5,10 +5,9 @@
   "description": "Haxe port of sfxr",
   "contributors": ["fserb"],
   "releasenote": "Initial release, support for flash and native targets",
-  "version": "1.0",
+  "version": "0.1",
   "url": "https://github.com/fserb/sfxr",
   "dependencies": {
-    "openfl-native": "",
     "openfl": ""
   }
 }
