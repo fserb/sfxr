@@ -18,6 +18,8 @@ class Sfxr {
       _params = new SfxrParams();
     }
     buffer = new ByteArray();
+    buffer.endian = flash.utils.Endian.LITTLE_ENDIAN;
+
     reset(true);
     synthWave(buffer);
   }
@@ -353,10 +355,6 @@ class Sfxr {
       }
       // Averages out the super samples and applies volumes
       _superSample = _masterVolume * _envelopeVolume * _superSample / 8.0;
-
-      // for some reason, our samples are way louder than as3sfxr.
-      // and I can't find the problem. :(
-      _superSample /= 256.0;
 
       // Clipping if too loud
       if(_superSample > 1.0) _superSample = 1.0;
