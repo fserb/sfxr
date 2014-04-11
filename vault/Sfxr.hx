@@ -396,9 +396,11 @@ class Sfxr {
 
     file.position = 0;
 
+    #if !html5
     var s = new flash.media.Sound();
     s.loadCompressedDataFromByteArray(file, file.length);
     s.play();
+    #end
 
     // write data
     // var f = sys.io.File.write("test.wav", true);
