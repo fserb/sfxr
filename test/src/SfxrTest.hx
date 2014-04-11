@@ -19,6 +19,10 @@ class SfxrTest {
     params = SfxrParams.fromString("0,,0.2193,,0.4748,0.3482,,0.0691,,,,,,0.3482,,,,,1,,,,,0.5");
     var sfxr = new Sfxr(params);
     sfxr.play();
+
+    haxe.Timer.delay(function() {
+sfxr.play();
+    }, 1000);
   }
 }
 

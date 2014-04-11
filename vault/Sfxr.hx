@@ -10,6 +10,7 @@ import flash.utils.ByteArray;
 class Sfxr {
   var _params: SfxrParams;
   var buffer: ByteArray;
+  var player: Void -> Void;
 
   public function new(?params: SfxrParams = null) {
     if (params != null) {
@@ -22,10 +23,12 @@ class Sfxr {
 
     reset(true);
     synthWave(buffer);
+    player = makePlayer(buffer);
+
   }
 
-  public function play() {
-    playBuffer(buffer);
+  inline public function play() {
+    player();
   }
 
   var _masterVolume:Float;           // masterVolume * masterVolume (for quick calculations)
@@ -365,7 +368,7 @@ class Sfxr {
 
   // tested with native Mac
 #if !flash
-  function playBuffer(wave: ByteArray) {
+  function makePlayer(wave: ByteArray): Void -> Void {
     var wav_freq = 44100;
     var wav_bits = 16;
     var stereo = false;
@@ -397,7 +400,11 @@ class Sfxr {
     #if !html5
     var s = new flash.media.Sound();
     s.loadCompressedDataFromByteArray(file, file.length);
-    s.play();
+    return function() {
+      s.play();
+    };
+    #else
+    return function() {};
     #end
 
     // write data
@@ -408,7 +415,7 @@ class Sfxr {
 
 #else
   // based on BadSector's DynSound.hx
-  function playBuffer(wave: ByteArray) {
+  function makePlayer(wave: ByteArray): Void -> Void {
     var rate = 3;
     var is16bits = 1;
     var stereo = 0;
@@ -468,8 +475,10 @@ class Sfxr {
     swf.position = 0;
 
     // load it
-    var ldr = new flash.display.Loader();
-    ldr.loadBytes (swf);
+    return function() {
+      var ldr = new flash.display.Loader();
+      ldr.loadBytes (swf);
+    };
   }
 #end
 }

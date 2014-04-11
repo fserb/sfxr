@@ -11,7 +11,6 @@ This is a working version for flash and native. See SfxrTest.hx for an example.
 TODO
 ----
 - Proper documentation and examples
-- Add proper per platform cache (cache final object instead of buffer)
 - Support for html5 target
 - Add better test
 - Small tool to experiment with random sounds
