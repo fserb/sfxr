@@ -1,7 +1,11 @@
 package vault;
 
 class SfxrParams {
+  #if flash9
   public var waveType:UInt = 0;                // Shape of the wave (0:square, 1:saw, 2:sin or 3:noise)
+  #else
+  public var waveType:Int = 0;
+  #end
   public var masterVolume:Float = 0.5;         // Overall volume of the sound (0 to 1)
 
   public var attackTime:Float = 0.0;           // Length of the volume envelope attack (0 to 1)
