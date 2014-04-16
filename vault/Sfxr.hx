@@ -33,12 +33,8 @@ class Sfxr {
 
   var _masterVolume:Float;           // masterVolume * masterVolume (for quick calculations)
 
-  #if flash9
-  var _waveType:UInt;                // The type of wave to generate
-  #else
-  var _waveType:Int;
-  #end
-
+  var _waveType:Int;                // The type of wave to generate
+  
   var _envelopeVolume:Float;         // Current volume of the envelope
   var _envelopeStage:Int;            // Current stage of the envelope (attack, sustain, decay, end)
   var _envelopeTime:Float;           // Current time through current enelope stage
@@ -96,11 +92,7 @@ class Sfxr {
   var _noiseBuffer:Array<Float>;     // Buffer of random values used to generate noise
 
   var _superSample:Float;            // Actual sample writen to the wave
-  #if flash9
-  var _sampleCount:UInt;             // Number of samples added to the buffer sample
-  #else
-  var _sampleCount:Int;
-  #end
+  var _sampleCount:Int;             // Number of samples added to the buffer sample
   var _bufferSample:Float;           // Another supersample used to create a 22050Hz wave
 
   /**
