@@ -4,8 +4,8 @@
   "tags": ["games","sound","cross"],
   "description": "Haxe port of sfxr",
   "contributors": ["fserb"],
-  "releasenote": "Support for HTML5 targets",
-  "version": "0.1.1",
+  "releasenote": "Fix for creating multiple HTML5 audio contexts",
+  "version": "0.1.2",
   "url": "https://github.com/fserb/sfxr",
   "dependencies": {
     "openfl": ""
