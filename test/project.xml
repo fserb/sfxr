@@ -12,6 +12,6 @@
 
 	<source path="src" />
 
-	<haxelib name="openfl" />
 	<haxelib name="sfxr" />
+	<haxelib name="openfl" />
 </project>

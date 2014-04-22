@@ -7,7 +7,5 @@
   "releasenote": "Fix for creating multiple HTML5 audio contexts",
   "version": "0.1.2",
   "url": "https://github.com/fserb/sfxr",
-  "dependencies": {
-    "openfl": ""
-  }
+  "dependencies": { }
 }

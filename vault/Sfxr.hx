@@ -5,8 +5,19 @@
 
 package vault;
 
+#if flash
+typedef ByteArray = haxe.io.BytesData
+#end
+
+#if cpp
 import flash.utils.ByteArray;
-import openfl.utils.ArrayBuffer;
+#end
+
+#if html5
+import js.html.ArrayBuffer;
+import js.html.Uint8Array;
+typedef ByteArray = haxe.io.BytesData;
+#end
 
 class Sfxr {
   var _params: SfxrParams;
@@ -20,7 +31,9 @@ class Sfxr {
       _params = new SfxrParams();
     }
     buffer = new ByteArray();
+    #if !html5
     buffer.endian = flash.utils.Endian.LITTLE_ENDIAN;
+    #end
 
     reset(true);
     synthWave(buffer);
@@ -35,7 +48,7 @@ class Sfxr {
   var _masterVolume:Float;           // masterVolume * masterVolume (for quick calculations)
 
   var _waveType:Int;                // The type of wave to generate
-  
+
   var _envelopeVolume:Float;         // Current volume of the envelope
   var _envelopeStage:Int;            // Current stage of the envelope (attack, sustain, decay, end)
   var _envelopeTime:Float;           // Current time through current enelope stage
@@ -363,15 +376,19 @@ class Sfxr {
       // Clipping if too loud
       if(_superSample > 1.0) _superSample = 1.0;
       else if(_superSample < -1.0)  _superSample = -1.0;
-      buffer.writeShort(Std.int(32767.0 * _superSample));
+
+      var val: Int = Std.int(32767.0 * _superSample);
+
+      #if html5
+        buffer.push(val & 0xFF);
+        buffer.push((val >> 8) & 0xFF);
+      #else
+        buffer.writeShort(val);
+      #end
     }
   }
 
-#if !flash
-  #if html5
-    static var html5AudioContext = null;
-  #end
-
+#if cpp
   function makePlayer(wave: ByteArray): Void -> Void {
     var wav_freq = 44100;
     var wav_bits = 16;
@@ -401,56 +418,101 @@ class Sfxr {
 
     file.position = 0;
 
-    #if html5
-
-      var audioBuffer = null;
-      var buffer = new ArrayBuffer(file.length);
-      var bv = untyped __js__("new Uint8Array(buffer)");
-      for (i in 0...file.length) {
-        bv[i] = file.readByte();
-      }
-      var wantsToPlay = false;
-      if (html5AudioContext == null) {
-        var creator = untyped __js__("window.webkitAudioContext || window.audioContext || null");
-        if (creator == null) return function() {};
-        html5AudioContext = untyped __js__("new creator();");
-      }
-      var play = function() {
-        if (audioBuffer == null) {
-          wantsToPlay = true;
-          return;
-        }
-        var srcAudio = html5AudioContext.createBufferSource();
-        srcAudio.buffer = audioBuffer;
-        srcAudio.connect(html5AudioContext.destination);
-        srcAudio.loop = false;
-        srcAudio.start(0);
-      };
-      untyped html5AudioContext.decodeAudioData(buffer, function(b) {
-        audioBuffer = b;
-        if (wantsToPlay) {
-          play();
-        }
-      });
-      return play;
-
-    #else
-
-      var s = new flash.media.Sound();
-      s.loadCompressedDataFromByteArray(file, file.length);
-      return function() {
-        s.play();
-      };
-
-    #end
+    var s = new flash.media.Sound();
+    s.loadCompressedDataFromByteArray(file, file.length);
+    return function() {
+      s.play();
+    };
 
     // write data
     // var f = sys.io.File.write("test.wav", true);
     // f.writeBytes(file, 0, file.length);
     // f.close();
   }
+#end
 
-#else
+#if html5
+  static var html5AudioContext = null;
+  function makePlayer(wave: ByteArray): Void -> Void {
+    var wav_freq = 44100;
+    var wav_bits = 16;
+    var stereo = false;
+
+    // All WAVE headers have 44 bytes up to the data.
+    var buffer = new ArrayBuffer(44 + wave.length);
+    var bv = new Uint8Array(buffer);
+    var p = 0;
+
+    var writeString = function(s: String) {
+      for (i in 0...s.length) {
+        bv[p++] = StringTools.fastCodeAt(s, i);
+      }
+    };
+
+    var writeShort = function(s: Int) {
+      bv[p++] = s & 0xFF;
+      bv[p++] = (s >> 8) & 0xFF;
+    }
+
+    var writeLong = function(s: Int) {
+      bv[p++] = s & 0xFF;
+      bv[p++] = (s >> 8) & 0xFF;
+      bv[p++] = (s >> 16) & 0xFF;
+      bv[p++] = (s >> 24) & 0xFF;
+    }
+
+    writeString("RIFF");
+    writeLong(0);
+    writeString("WAVE");
+    writeString("fmt ");
+    writeLong(16);
+    writeShort(1); // compression code = PCM
+
+    var channels = stereo ? 2 : 1;
+    writeShort(channels); // channels (mono/stereo)
+    writeLong(wav_freq); // sample rate
+    var bps  = wav_freq * channels * Std.int(wav_bits/8);
+    writeLong(bps); // bytes/sec
+    var align = channels * Std.int(wav_bits/8);
+    writeShort(align); // block align
+    writeShort(wav_bits); // bits per sample
+
+    writeString("data");
+    writeLong(wave.length); // chunk size
+    bv.set(wave, p);
+
+    // Data is all set. Time to call AudioContext.
+
+    var audioBuffer = null;
+    var wantsToPlay = false;
+    if (html5AudioContext == null) {
+      var creator = untyped __js__("window.webkitAudioContext || window.audioContext || null");
+      if (creator == null) return function() {};
+      html5AudioContext = untyped __js__("new creator();");
+    }
+    var play = function() {
+      if (audioBuffer == null) {
+        wantsToPlay = true;
+        return;
+      }
+      var srcAudio = html5AudioContext.createBufferSource();
+      srcAudio.buffer = audioBuffer;
+      srcAudio.connect(html5AudioContext.destination);
+      srcAudio.loop = false;
+      srcAudio.start(0);
+    };
+    untyped html5AudioContext.decodeAudioData(buffer, function(b) {
+      audioBuffer = b;
+      if (wantsToPlay) {
+        play();
+      }
+    });
+    return play;
+  }
+#end
+
+
+#if flash
   // based on BadSector's DynSound.hx
   function makePlayer(wave: ByteArray): Void -> Void {
     var rate = 3;

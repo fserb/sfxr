@@ -28,7 +28,7 @@ class SfxrTest {
     haxe.Timer.delay(function() {
       trace(2);
       sfxr.play();
-    }, 4000);
+    }, 3000);
   }
 }
 
