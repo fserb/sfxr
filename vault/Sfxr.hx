@@ -6,6 +6,7 @@
 package vault;
 
 import flash.utils.ByteArray;
+import openfl.utils.ArrayBuffer;
 
 class Sfxr {
   var _params: SfxrParams;
@@ -397,14 +398,45 @@ class Sfxr {
 
     file.position = 0;
 
-    #if !html5
-    var s = new flash.media.Sound();
-    s.loadCompressedDataFromByteArray(file, file.length);
-    return function() {
-      s.play();
-    };
+    #if html5
+
+      var audioBuffer = null;
+      var buffer = new ArrayBuffer(file.length);
+      var bv = untyped __js__("new Uint8Array(buffer)");
+      for (i in 0...file.length) {
+        bv[i] = file.readByte();
+      }
+      var wantsToPlay = false;
+      var creator = untyped __js__("window.webkitAudioContext || window.audioContext || null");
+      if (creator == null) return function() {};
+      var audioContext = untyped __js__("new creator();");
+      var play = function() {
+        if (audioBuffer == null) {
+          wantsToPlay = true;
+          return;
+        }
+        var srcAudio = audioContext.createBufferSource();
+        srcAudio.buffer = audioBuffer;
+        srcAudio.connect(audioContext.destination);
+        srcAudio.loop = false;
+        srcAudio.start(0);
+      };
+      untyped audioContext.decodeAudioData(buffer, function(b) {
+        audioBuffer = b;
+        if (wantsToPlay) {
+          play();
+        }
+      });
+      return play;
+
     #else
-    return function() {};
+
+      var s = new flash.media.Sound();
+      s.loadCompressedDataFromByteArray(file, file.length);
+      return function() {
+        s.play();
+      };
+
     #end
 
     // write data
