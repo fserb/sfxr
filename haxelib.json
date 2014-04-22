@@ -4,8 +4,8 @@
   "tags": ["games","sound","cross"],
   "description": "Haxe port of sfxr",
   "contributors": ["fserb"],
-  "releasenote": "Initial release, support for flash and native targets",
-  "version": "0.1.0",
+  "releasenote": "Support for HTML5 targets",
+  "version": "0.1.1",
   "url": "https://github.com/fserb/sfxr",
   "dependencies": {
     "openfl": ""
