@@ -367,8 +367,11 @@ class Sfxr {
     }
   }
 
-  // tested with native Mac
 #if !flash
+  #if html5
+    static var html5AudioContext = null;
+  #end
+
   function makePlayer(wave: ByteArray): Void -> Void {
     var wav_freq = 44100;
     var wav_bits = 16;
@@ -407,21 +410,23 @@ class Sfxr {
         bv[i] = file.readByte();
       }
       var wantsToPlay = false;
-      var creator = untyped __js__("window.webkitAudioContext || window.audioContext || null");
-      if (creator == null) return function() {};
-      var audioContext = untyped __js__("new creator();");
+      if (html5AudioContext == null) {
+        var creator = untyped __js__("window.webkitAudioContext || window.audioContext || null");
+        if (creator == null) return function() {};
+        html5AudioContext = untyped __js__("new creator();");
+      }
       var play = function() {
         if (audioBuffer == null) {
           wantsToPlay = true;
           return;
         }
-        var srcAudio = audioContext.createBufferSource();
+        var srcAudio = html5AudioContext.createBufferSource();
         srcAudio.buffer = audioBuffer;
-        srcAudio.connect(audioContext.destination);
+        srcAudio.connect(html5AudioContext.destination);
         srcAudio.loop = false;
         srcAudio.start(0);
       };
-      untyped audioContext.decodeAudioData(buffer, function(b) {
+      untyped html5AudioContext.decodeAudioData(buffer, function(b) {
         audioBuffer = b;
         if (wantsToPlay) {
           play();
