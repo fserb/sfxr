@@ -13,7 +13,7 @@ typedef ByteArray = haxe.io.BytesData
 import flash.utils.ByteArray;
 #end
 
-#if html5
+#if (html || html5)
 import js.html.ArrayBuffer;
 import js.html.Uint8Array;
 typedef ByteArray = haxe.io.BytesData;
@@ -31,7 +31,7 @@ class Sfxr {
       _params = new SfxrParams();
     }
     buffer = new ByteArray();
-    #if !html5
+    #if !(html || html5)
     buffer.endian = flash.utils.Endian.LITTLE_ENDIAN;
     #end
 
@@ -379,7 +379,7 @@ class Sfxr {
 
       var val: Int = Std.int(32767.0 * _superSample);
 
-      #if html5
+      #if (html || html5)
         buffer.push(val & 0xFF);
         buffer.push((val >> 8) & 0xFF);
       #else
@@ -431,7 +431,7 @@ class Sfxr {
   }
 #end
 
-#if html5
+#if (html || html5)
   static var html5AudioContext = null;
   function makePlayer(wave: ByteArray): Void -> Void {
     var wav_freq = 44100;
