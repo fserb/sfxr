@@ -486,7 +486,7 @@ class Sfxr {
     var audioBuffer = null;
     var wantsToPlay = false;
     if (html5AudioContext == null) {
-      var creator = untyped __js__("window.webkitAudioContext || window.audioContext || null");
+      var creator = untyped __js__("window.webkitAudioContext || window.AudioContext || null");
       if (creator == null) return function() {};
       html5AudioContext = untyped __js__("new creator();");
     }
