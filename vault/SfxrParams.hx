@@ -80,6 +80,38 @@ class SfxrParams {
 
     return p;
   }
+  
+  public function duplicate():SfxrParams
+  {
+	  var retParams:SfxrParams = new SfxrParams();
+	  
+		retParams.waveType = waveType;
+		retParams.attackTime = attackTime;
+		retParams.sustainTime = sustainTime;
+		retParams.sustainPunch = sustainPunch;
+		retParams.decayTime = decayTime;
+		retParams.startFrequency = startFrequency;
+		retParams.minFrequency = minFrequency;
+		retParams.slide = slide;
+		retParams.deltaSlide = deltaSlide;
+		retParams.vibratoDepth = vibratoDepth;
+		retParams.vibratoSpeed = vibratoSpeed;
+		retParams.changeAmount = changeAmount;
+		retParams.changeSpeed = changeSpeed;
+		retParams.squareDuty = squareDuty;
+		retParams.dutySweep = dutySweep;
+		retParams.repeatSpeed = repeatSpeed;
+		retParams.phaserOffset = phaserOffset;
+		retParams.phaserSweep = phaserSweep;
+		retParams.lpFilterCutoff = lpFilterCutoff;
+		retParams.lpFilterCutoffSweep = lpFilterCutoffSweep;
+		retParams.lpFilterResonance = lpFilterResonance;
+		retParams.hpFilterCutoff = hpFilterCutoff;
+		retParams.hpFilterCutoffSweep = hpFilterCutoffSweep;
+		retParams.masterVolume = masterVolume;
+		
+		return retParams;
+  }
 
   public function generatePickupCoin() {
     startFrequency = 0.4 + random() * 0.5;
@@ -273,7 +305,7 @@ class SfxrParams {
     _randomstate = (seed != null) ? seed : Math.floor(Math.random() * MAX_INT);
   }
 
-  function randint(): Int {
+  public function randint(): Int {
     _randomstate = cast ((1103515245.0*_randomstate + 12345) % MAX_INT);
     return _randomstate;
   }

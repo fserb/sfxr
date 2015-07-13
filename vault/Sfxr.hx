@@ -22,27 +22,45 @@ typedef ByteArray = haxe.io.BytesData;
 class Sfxr {
   var _params: SfxrParams;
   var buffer: ByteArray;
-  var player: Void -> Void;
+  var player: Array<Void -> Void>;
 
-  public function new(?params: SfxrParams = null) {
+  public function new(?params: SfxrParams = null, ?numMutations:Int = 1, ?mutationAmount:Float = 0.05) {
     if (params != null) {
       _params = params;
     } else {
       _params = new SfxrParams();
     }
-    buffer = new ByteArray();
-    #if !(html || html5)
-    buffer.endian = flash.utils.Endian.LITTLE_ENDIAN;
-    #end
+	
+	var originalParams:SfxrParams = _params.duplicate();
+	
+	if (numMutations == 1)
+		mutationAmount = 0;
+	
+	player = new Array<Void -> Void>();
+	
+	for (i in 0...numMutations)
+	{
+		buffer = new ByteArray();
+		#if !(html || html5)
+		buffer.endian = flash.utils.Endian.LITTLE_ENDIAN;
+		#end
+		
+		_params = originalParams.duplicate();
+		
+		if (mutationAmount > 0)
+			_params.mutate(mutationAmount);
 
-    reset(true);
-    synthWave(buffer);
-    player = makePlayer(buffer);
-
+		reset(true);
+		synthWave(buffer);
+		player.push(makePlayer(buffer));
+	}
   }
 
   inline public function play() {
-    player();
+	if (player.length > 1)
+		player[_params.randint() % player.length]();
+	else
+		player[0]();
   }
 
   var _masterVolume:Float;           // masterVolume * masterVolume (for quick calculations)
