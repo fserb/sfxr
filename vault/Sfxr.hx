@@ -16,7 +16,7 @@ import flash.utils.ByteArray;
 #if (html || html5)
 import js.html.ArrayBuffer;
 import js.html.Uint8Array;
-typedef ByteArray = haxe.io.BytesData;
+import flash.utils.ByteArray;
 #end
 
 class Sfxr {
@@ -31,9 +31,7 @@ class Sfxr {
       _params = new SfxrParams();
     }
     buffer = new ByteArray();
-    #if !(html || html5)
     buffer.endian = flash.utils.Endian.LITTLE_ENDIAN;
-    #end
 
     reset(true);
     synthWave(buffer);
@@ -379,12 +377,7 @@ class Sfxr {
 
       var val: Int = Std.int(32767.0 * _superSample);
 
-      #if (html || html5)
-        buffer.push(val & 0xFF);
-        buffer.push((val >> 8) & 0xFF);
-      #else
-        buffer.writeShort(val);
-      #end
+      buffer.writeShort(val);
     }
   }
 
@@ -439,7 +432,7 @@ class Sfxr {
     var stereo = false;
 
     // All WAVE headers have 44 bytes up to the data.
-    var buffer = new ArrayBuffer(44 + wave.length);
+    var buffer = new ArrayBuffer(44 + wave.byteView.length);
     var bv = new Uint8Array(buffer);
     var p = 0;
 
@@ -479,7 +472,7 @@ class Sfxr {
 
     writeString("data");
     writeLong(wave.length); // chunk size
-    bv.set(wave, p);
+    bv.set(wave.byteView, p);
 
     // Data is all set. Time to call AudioContext.
 
