@@ -432,7 +432,7 @@ class Sfxr {
     var stereo = false;
 
     // All WAVE headers have 44 bytes up to the data.
-    var buffer = new ArrayBuffer(44 + wave.byteView.length);
+    var buffer = new ArrayBuffer(44 + wave.length);
     var bv = new Uint8Array(buffer);
     var p = 0;
 
@@ -472,14 +472,13 @@ class Sfxr {
 
     writeString("data");
     writeLong(wave.length); // chunk size
-    bv.set(wave.byteView, p);
+    bv.set(new js.html.Uint8Array(wave, 0, wave.length), p);
 
     // Data is all set. Time to call AudioContext.
-
     var audioBuffer = null;
     var wantsToPlay = false;
     if (html5AudioContext == null) {
-      var creator = untyped __js__("window.webkitAudioContext || window.AudioContext || null");
+      var creator = untyped __js__("window.AudioContext || null");
       if (creator == null) return function() {};
       html5AudioContext = untyped __js__("new creator();");
     }
