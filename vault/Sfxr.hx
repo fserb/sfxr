@@ -9,7 +9,7 @@ package vault;
 typedef ByteArray = haxe.io.BytesData
 #end
 
-#if cpp
+#if (cpp || neko)
 import flash.utils.ByteArray;
 #end
 
@@ -388,7 +388,7 @@ class Sfxr {
     }
   }
 
-#if cpp
+#if (cpp || neko)
   function makePlayer(wave: ByteArray): Void -> Void {
     var wav_freq = 44100;
     var wav_bits = 16;
